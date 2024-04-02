@@ -17,7 +17,7 @@ public class AccountController {
 
    @GetMapping("/accounts/{idClient}")
     public List<Account> getAccounts(@PathVariable String idClient){
-        return  accountRepository.findAllByIdClient(idClient);
+        return  accountRepository.findAll();
     }
 
 

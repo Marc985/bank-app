@@ -51,7 +51,7 @@ public class TransfertService {
 
      String reference="VIR_"+ LocalDateTime.now();
         Account account=accountRepository.findAccountById(transfert.getRecipientAccount());
-        if(account.getAccountName()!=null){
+        if(account.getAccountNumber()!=null){
 
               internalTransfert(reference,transfert.getSenderAccount(),senderSold.getBalance(), transfert);
 

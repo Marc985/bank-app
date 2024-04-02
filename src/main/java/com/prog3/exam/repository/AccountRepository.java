@@ -86,7 +86,7 @@ public class AccountRepository extends Request<Account> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  accounts;
+        return  toUpdate;
     }
 
 
@@ -122,13 +122,12 @@ public class AccountRepository extends Request<Account> {
         return account;
     }
 
-<<<<<<< HEAD
+
     public String updateEligibility(long idAccount, boolean option){
         String sql="update account set is_eligible="+option+" where account_number="+idAccount;
-=======
-    public String updateEligibility(float idAccount, boolean option){
-        String sql="update bank_account set is_eligible="+option;
->>>>>>> 1224c06a4ebfdb4dbab130e8682b52ab4a0dd790
+
+
+
         String message="error while trying to update";
         try{
             PreparedStatement preparedStatement=connection.prepareStatement(sql);

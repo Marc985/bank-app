@@ -9,10 +9,10 @@ import java.sql.SQLException;
 
 @Configuration
 public class ConnectionDB {
-    private String username=System.getenv("USERNAME");
+    private final String username=System.getenv("USERNAME");
 
-    private String password=System.getenv("PASSWORD");
-    private String url=System.getenv("URL");
+    private final String password=System.getenv("PASSWORD");
+    private final String url=System.getenv("URL");
     @Bean
     public  Connection getConnection() throws SQLException {
 
@@ -22,7 +22,6 @@ public class ConnectionDB {
                 username,
                 password
         );
-
 
     }
 

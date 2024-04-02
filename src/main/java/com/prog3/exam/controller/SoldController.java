@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class SoldController {
     @Autowired
     SoldRepository soldRepository;

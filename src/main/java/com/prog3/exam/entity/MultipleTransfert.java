@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MultipleTransfert extends TransfertModal{
-    List<Long> receivers;
+   private List<Long> receivers;
 
 
 }

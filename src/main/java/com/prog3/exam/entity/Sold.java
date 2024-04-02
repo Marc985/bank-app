@@ -12,9 +12,9 @@ import java.sql.Date;
 @NoArgsConstructor
 public class Sold {
 
-    double balance;
-    Date date;
-    long accountId;
+   private double balance;
+   private Date date;
+   private long accountId;
 
 
 }

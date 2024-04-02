@@ -1,5 +1,6 @@
 package com.prog3.exam.entity;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.prog3.exam.idgenerator.UniqueNumberGenerator;
 import lombok.*;
 import org.springframework.boot.context.properties.bind.DefaultValue;

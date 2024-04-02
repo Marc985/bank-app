@@ -9,6 +9,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class InterestRate implements Serializable {
-    float first7days;
-    float after7days;
+   private float first7days;
+   private float after7days;
 }

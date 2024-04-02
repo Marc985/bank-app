@@ -13,6 +13,6 @@ public class SupplyAccountController {
     TransfertService transfertService;
     @PostMapping("/account/supply")
     public String performSupply(@RequestBody  Transfert transfert){
-        return transfertService.supplyAccount(transfert.getRecipientAccount(),transfert.getAmount(),transfert.getRegistrationDate(),transfert.getEffectiveDate(),transfert.getReason());
+        return transfertService.supplyAccount(transfert.getRecipientAccount(),transfert.getAmount(),transfert.getRegistrationDate(),transfert.getEffectiveDate(),transfert.getReason(),transfert.getIdCategory());
     }
 }

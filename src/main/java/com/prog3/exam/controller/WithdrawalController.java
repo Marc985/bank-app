@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
 public class WithdrawalController {
     @Autowired
     WithdrawalService withdrawalService;
@@ -14,7 +13,7 @@ public class WithdrawalController {
     @PostMapping("/account/{id}/withdrawals")
     public String withdrawalSold(@PathVariable long id,@RequestBody Withdrawal withdrawal){
     return     withdrawalService
-                .makeWithdrawal(id,withdrawal.getReason(),withdrawal.getAmount());
+                .makeWithdrawal(id,withdrawal.getReason(),withdrawal.getAmount(),withdrawal.getCategory());
 
     }
 }

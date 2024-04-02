@@ -9,8 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class AccountRepository extends Request<Account> {
@@ -23,7 +25,14 @@ public class AccountRepository extends Request<Account> {
     @Autowired
     SoldRepository soldRepository;
 
-    @Override
+
+
+    String accountNameColumn="account_name";
+    String accountNumberColumn="account_number";
+    String idClientColumn="id_client";
+    String isEligibleColumn="is_eligible";
+
+
     public Account save(Account account) {
 
         String sql="insert into bank_account(account_number,client_name,client_last_name,birthdate," +
@@ -77,8 +86,11 @@ public class AccountRepository extends Request<Account> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return toUpdate;
+        return  accounts;
     }
+
+
+
 
     public Account findAccountById(long idAccount) {
         String sql="select * from bank_account where account_number="+idAccount;

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
 
 @RestController
+
 public class EntryExpenseController {
     @Autowired
     EntryExpenseRepository entryExpenseRepository;

@@ -22,7 +22,7 @@ public class SoldRepository extends Request<Sold>{
         return "sold";
     }
     public Sold findSoldByDate(long idAccount, Date date){
-        String sql="SELECT * FROM sold WHERE account_id=? AND date<? OR date=? ORDER BY id_sold DESC limit 1";
+        String sql="SELECT * FROM sold WHERE account_id=? AND (date<? OR date=?) ORDER BY id_sold DESC limit 1";
 
         Sold sold=new Sold();
         try {

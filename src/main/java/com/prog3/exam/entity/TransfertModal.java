@@ -17,5 +17,6 @@ public class TransfertModal {
    private Date registerDate;
    private Date effecitveDate;
    private String status;
+   private int idCategory;
 
 }

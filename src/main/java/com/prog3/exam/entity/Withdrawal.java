@@ -11,7 +11,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class Withdrawal implements Serializable {
-    double amount;
-    String reason;
-    Date date;
+   private double amount;
+   private String reason;
+   private Date date;
+   private int category;
 }

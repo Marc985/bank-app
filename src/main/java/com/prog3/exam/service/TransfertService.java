@@ -26,14 +26,14 @@ public class TransfertService {
     @Autowired
     TransfertRepository transfertRepository;
     public String supplyAccount(long recipientAccount,double amount,Date effectiveDate,Date registrationDate,
-                                String reason){
+                                String reason,int idTransaction){
         Sold receveirSold=soldRepository.findLastSoldByIdAccount(recipientAccount);
         String reference="VIR_"+ LocalDateTime.now();
 
             double newSoldValue=receveirSold.getBalance()+amount;
             updateSold(recipientAccount,newSoldValue,effectiveDate);
 
-            addTransaction(recipientAccount,effectiveDate,reason,"credit",amount);
+            addTransaction(recipientAccount,effectiveDate,reason,"credit",amount,idTransaction);
 
 
 
@@ -82,9 +82,9 @@ public class TransfertService {
 
      updateSold(transfert.getRecipientAccount(),(recipientSold.getBalance()+transfert.getAmount()),currentDate);
 
-     addTransaction(senderAccount,currentDate,transfert.getReason(),"debit",transfert.getAmount());
+     addTransaction(senderAccount,currentDate,transfert.getReason(),"debit",transfert.getAmount(),transfert.getIdCategory());
 
-     addTransaction(transfert.getRecipientAccount(),currentDate,transfert.getReason(),"credit",transfert.getAmount());
+     addTransaction(transfert.getRecipientAccount(),currentDate,transfert.getReason(),"credit",transfert.getAmount(),transfert.getIdCategory());
 
      addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),senderAccount,currentDate,currentDate,"success");
  }
@@ -101,7 +101,7 @@ public class TransfertService {
    if(senderSold.getBalance()<(totalAmount))
        return "cannot process the transfert because your sold is insufficient";
    updateSold(multipleTransfert.getSenderAccount(),senderSold.getBalance()-totalAmount,multipleTransfert.getRegisterDate());
-   addTransaction(multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"debit",totalAmount);
+   addTransaction(multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"debit",totalAmount,multipleTransfert.getIdCategory());
 
    String reference="VIR_"+LocalDateTime.now();
    addTransfertHistory(reference,totalAmount,multipleTransfert.getReason(),multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getRegisterDate(),"success");
@@ -109,7 +109,7 @@ public class TransfertService {
             Sold recipientSold=soldRepository.findLastSoldByIdAccount(recipientAccount);
 
             updateSold(recipientAccount,recipientSold.getBalance()+multipleTransfert.getAmount(),multipleTransfert.getRegisterDate());
-            addTransaction(recipientAccount,multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"credit",multipleTransfert.getAmount());
+            addTransaction(recipientAccount,multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"credit",multipleTransfert.getAmount(),multipleTransfert.getIdCategory());
         }
         return "transfert successfully processed";
  }
@@ -125,13 +125,14 @@ public class TransfertService {
          }
      }
  }
- private void addTransaction(long accountNumber,Date transactionDate,String reason,String type,double amount){
+ private void addTransaction(long accountNumber,Date transactionDate,String reason,String type,double amount,int idCategory){
         Transaction newTransaction=new Transaction();
         newTransaction.setDate(transactionDate);
         newTransaction.setType(type);
         newTransaction.setReason(reason);
         newTransaction.setAmount(amount);
         newTransaction.setAccountNumber(accountNumber);
+        newTransaction.setCategory(idCategory);
         transactionRepository.saveTransaction(newTransaction);
  }
  private  void updateSold(long accountId,double balance,Date date){

@@ -18,4 +18,5 @@ public class Transfert implements Serializable {
    private String status;
    private long senderAccount;
    private long recipientAccount;
+   private int idCategory;
 }

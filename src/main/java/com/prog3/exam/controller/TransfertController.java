@@ -26,7 +26,7 @@ public class TransfertController {
      return    transfertService.transfertMoney(transfert);
 
     }
-    @PostMapping("/sheduled")
+    @PostMapping("/scheduled")
     public String sheduledTransfert(@RequestBody Transfert transfert){
         return transfertService.sheduledTransfert(transfert);
     }

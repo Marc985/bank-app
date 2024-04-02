@@ -112,8 +112,8 @@ public class AccountRepository extends Request<Account> {
         return account;
     }
 
-    public String updateEligibility(float idAccount, boolean option){
-        String sql="update account set is_eligible="+option;
+    public String updateEligibility(long idAccount, boolean option){
+        String sql="update account set is_eligible="+option+" where account_number="+idAccount;
         String message="error while trying to update";
         try{
             PreparedStatement preparedStatement=connection.prepareStatement(sql);

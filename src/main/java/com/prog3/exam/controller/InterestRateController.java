@@ -3,10 +3,7 @@ package com.prog3.exam.controller;
 import com.prog3.exam.entity.InterestRate;
 import com.prog3.exam.repository.InterestRateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class InterestRateController {
@@ -17,5 +14,9 @@ public class InterestRateController {
          return    interestRateRepository.
                     updateInterestRate(interestRate.getFirst7days(),
                             interestRate.getAfter7days());
+    }
+    @GetMapping("/interestRate")
+    public InterestRate getInterestRate(){
+        return  interestRateRepository.getInterestRate();
     }
 }

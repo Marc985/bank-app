@@ -20,20 +20,22 @@ public class TransfertService {
     @Autowired
     SoldRepository soldRepository;
     @Autowired
+    SoldService soldService;
+    @Autowired
     TransactionRepository transactionRepository;
     @Autowired
     AccountRepository accountRepository;
     @Autowired
     TransfertRepository transfertRepository;
-    public String supplyAccount(long recipientAccount,double amount,Date effectiveDate,Date registrationDate,
-                                String reason,int idTransaction){
-        Sold receveirSold=soldRepository.findLastSoldByIdAccount(recipientAccount);
+    public String supplyAccount(long recipientAccount,double amount,Date registrationDate,Date effectiveDate,
+                                String reason,int category){
+        SoldWithLoan receveirSold=soldService.getCurrentSolds(recipientAccount);
         String reference="VIR_"+ LocalDateTime.now();
 
-            double newSoldValue=receveirSold.getBalance()+amount;
+            double newSoldValue=receveirSold.getSold()+amount-(receveirSold.getLoan()+ receveirSold.getLoanInterest());
             updateSold(recipientAccount,newSoldValue,effectiveDate);
 
-            addTransaction(recipientAccount,effectiveDate,reason,"credit",amount,idTransaction);
+            addTransaction(recipientAccount,effectiveDate,reason,"credit",amount,category);
 
 
 
@@ -49,7 +51,7 @@ public class TransfertService {
 
      String reference="VIR_"+ LocalDateTime.now();
         Account account=accountRepository.findAccountById(transfert.getRecipientAccount());
-        if(account!=null){
+        if(account.getAccountName()!=null){
 
               internalTransfert(reference,transfert.getSenderAccount(),senderSold.getBalance(), transfert);
 
@@ -76,11 +78,11 @@ public class TransfertService {
  private void internalTransfert(String reference,long senderAccount,double senderSold,Transfert transfert){
         Date currentDate=Date.valueOf(LocalDate.now());
 
-     Sold recipientSold=soldRepository.findLastSoldByIdAccount(transfert.getRecipientAccount());
+     SoldWithLoan recipientSold=soldService.getCurrentSolds(transfert.getRecipientAccount());
 
      updateSold(senderAccount,(senderSold-transfert.getAmount()),currentDate);
 
-     updateSold(transfert.getRecipientAccount(),(recipientSold.getBalance()+transfert.getAmount()),currentDate);
+     updateSold(transfert.getRecipientAccount(),(recipientSold.getSold()+transfert.getAmount()-(recipientSold.getLoanInterest()+ recipientSold.getLoanInterest())),currentDate);
 
      addTransaction(senderAccount,currentDate,transfert.getReason(),"debit",transfert.getAmount(),transfert.getIdCategory());
 
@@ -100,16 +102,17 @@ public class TransfertService {
    double totalAmount=multipleTransfert.getAmount()*multipleTransfert.getReceivers().size();
    if(senderSold.getBalance()<(totalAmount))
        return "cannot process the transfert because your sold is insufficient";
-   updateSold(multipleTransfert.getSenderAccount(),senderSold.getBalance()-totalAmount,multipleTransfert.getRegisterDate());
-   addTransaction(multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"debit",totalAmount,multipleTransfert.getIdCategory());
+     Date currentDate=Date.valueOf(LocalDate.now());
 
+   updateSold(multipleTransfert.getSenderAccount(),senderSold.getBalance()-totalAmount,currentDate);
+   addTransaction(multipleTransfert.getSenderAccount(),currentDate,multipleTransfert.getReason(),"debit",totalAmount,multipleTransfert.getIdCategory());
    String reference="VIR_"+LocalDateTime.now();
-   addTransfertHistory(reference,totalAmount,multipleTransfert.getReason(),multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getRegisterDate(),"success");
+   addTransfertHistory(reference,totalAmount,multipleTransfert.getReason(),multipleTransfert.getSenderAccount(),currentDate,currentDate,"success");
         for(long recipientAccount:multipleTransfert.getReceivers()){
             Sold recipientSold=soldRepository.findLastSoldByIdAccount(recipientAccount);
 
-            updateSold(recipientAccount,recipientSold.getBalance()+multipleTransfert.getAmount(),multipleTransfert.getRegisterDate());
-            addTransaction(recipientAccount,multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"credit",multipleTransfert.getAmount(),multipleTransfert.getIdCategory());
+            updateSold(recipientAccount,recipientSold.getBalance()+multipleTransfert.getAmount(),currentDate);
+            addTransaction(recipientAccount,currentDate,multipleTransfert.getReason(),"credit",multipleTransfert.getAmount(),multipleTransfert.getIdCategory());
         }
         return "transfert successfully processed";
  }

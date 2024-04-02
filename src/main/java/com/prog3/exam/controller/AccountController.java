@@ -30,7 +30,7 @@ public class AccountController {
        return accountRepository.findAccountById(id);
 }
 @PutMapping("/account/{idAccount}/eligibility")
-    public String setEligibility(@PathVariable float idAccount,@RequestParam boolean isEligible){
+    public String setEligibility(@PathVariable long idAccount,@RequestParam boolean isEligible){
        return accountRepository.updateEligibility(idAccount,isEligible);
 }
 }

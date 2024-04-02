@@ -1,29 +1,75 @@
 CREATE  DATABASE digital_bank;
 
-CREATE  TABLE IF NOT EXISTS  account(
+-- \c digital_bank
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- db for the user authentication
+
+CREATE TABLE IF NOT EXISTS "user" (
+    user_id VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    username VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email_verified TIMESTAMP,
+    image VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS "user_log" (
+    id                VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id           VARCHAR(255) REFERENCES "user"(user_id),
+    "type"              VARCHAR(255),
+    provider          VARCHAR(255),
+    provider_account_id VARCHAR(255),
+    refresh_token     TEXT,
+    access_token      TEXT,
+    expires_at        INTEGER,
+    token_type        VARCHAR(255),
+    "scope"             VARCHAR(255),
+    id_token          TEXT,
+    session_state     VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS "session" (
+    id           VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_token VARCHAR(255) UNIQUE,
+    user_id       VARCHAR(255) REFERENCES "user"(user_id),
+    expires      TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "verification_token" (
+    identifier VARCHAR(255),
+    token      VARCHAR(255) UNIQUE,
+    expires    TIMESTAMP,
+    UNIQUE (identifier, token)
+);
+
+-- db for the bank account
+
+CREATE  TABLE IF NOT EXISTS  "bank_account"(
     account_number bigint primary key,
     client_name varchar(80),
     client_last_name varchar(80),
     birthdate date,
     monthly_net_income double precision,
-    is_eligible boolean default false
+    is_eligible boolean default false,
+    user_id  varchar(50) REFERENCES "user"(user_id)
 );
-
-CREATE TABLE IF NOT EXISTS sold(
+wq
+CREATE TABLE IF NOT EXISTS "sold"(
     id_sold serial primary key,
     balance double precision,
     "date" date,
-    account_id bigint  REFERENCES account(account_number)
-
+    account_id bigint  REFERENCES bank_account(account_number)
 );
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS "category"(
-                                         id_category serial primary key,
-                                         category_name varchar(100),
+    id_category serial primary key,
+    category_name varchar(100),
     category_type varchar(30) CHECK (category_type='debit' OR category_type='credit')
-    );
+);
 
 CREATE TABLE IF NOT EXISTS "transaction"(
     reference varchar(100) PRIMARY KEY,
@@ -31,31 +77,27 @@ CREATE TABLE IF NOT EXISTS "transaction"(
     amount double precision,
     "date" date,
     reason varchar(20),
-    account_number bigint REFERENCES account(account_number),
+    account_number bigint REFERENCES bank_account(account_number),
     id_category bigint REFERENCES category(id_category)
 );
 
-
-
-CREATE TABLE  IF NOT EXISTS transfert(
+CREATE TABLE  IF NOT EXISTS "transfert"(
     reference varchar(100) primary key,
     reason varchar(50),
     amount double precision,
     effective_date date,
     registration_date date,
     status varchar(30) check ( status='canceled' or status='pending' or status='success' ),
-    account bigint  REFERENCES account(account_number)
+    account bigint  REFERENCES bank_account(account_number)
 );
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-
-CREATE TABLE IF NOT EXISTS interest_rate(
+CREATE TABLE IF NOT EXISTS "interest_rate"(
     id_interest_rate serial primary key,
     first_7days float,
     after_7days float
 );
 
+-- functions
 
 CREATE OR REPLACE FUNCTION account_statement(account_number bigint, begin_date DATE, end_date DATE)
 RETURNS TABLE (
@@ -111,7 +153,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
- CREATE OR REPLACE FUNCTION entry_expense_sum(
+CREATE OR REPLACE FUNCTION entry_expense_sum(
 in account_number bigint,
 in start_date date,
 in end_date date)

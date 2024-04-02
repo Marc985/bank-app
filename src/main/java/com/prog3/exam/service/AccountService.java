@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -13,8 +14,8 @@ public class AccountService {
     @Autowired
     AccountRepository accountRepository;
    public String createAccount(Account account){
-       LocalDate date=LocalDate.now();
-       LocalDate birthdate= account.getBirthdate().toLocalDate();
+       LocalDateTime date= LocalDateTime.now();
+       LocalDateTime birthdate= account.getBirthdate().toLocalDateTime();
        long age= Math.abs(ChronoUnit.YEARS.between(birthdate,date));
        if(age>=21){
            accountRepository.save(account);
